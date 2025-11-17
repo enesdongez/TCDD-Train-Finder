@@ -8,53 +8,13 @@ const TrainChecker = () => {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [findData, setFindData] = useState<any>(null);
   const [resultData, setResultData] = useState<any>(null);
-  //81023 , 81502  test
-  //81007 , 81004  gerçek
-  const [bodyList, setBodyList] = useState<any>([
-    {
-      name: "Zülal",
-      isSendEmail: true,
-      train: "81007",
-      email: "zeynepzulal9@hotmail.com",
-      // email: "enes.dongez@jforce.com",
-      body: JSON.stringify({
-        searchRoutes: [
-          {
-            departureStationId: 98,
-            departureStationName: "ANKARA GAR",
-            arrivalStationId: 93,
-            arrivalStationName: "ESKİŞEHİR",
-            departureDate: "31-10-2025 21:00:00",
-          },
-        ],
-        passengerTypeCounts: [{ id: 0, count: 1 }],
-        searchReservation: false,
-        searchType: "DOMESTIC",
-        blTrainTypes: ["TURISTIK_TREN"],
-      }),
-    },
-    // {
-    //   name: "Enes",
-    //   isSendEmail: true,
-    //   train: train2,
-    //   email: "enes.dongez@jforce.com",
-    //   body: JSON.stringify({
-    //     searchRoutes: [
-    //       {
-    //         departureStationId: 1325,
-    //         departureStationName: "İSTANBUL(SÖĞÜTLÜÇEŞME)",
-    //         arrivalStationId: 93,
-    //         arrivalStationName: "ESKİŞEHİR",
-    //         departureDate: "31-10-2025 21:00:00",
-    //       },
-    //     ],
-    //     passengerTypeCounts: [{ id: 0, count: 1 }],
-    //     searchReservation: false,
-    //     searchType: "DOMESTIC",
-    //     blTrainTypes: ["TURISTIK_TREN"],
-    //   }),
-    // },
-  ]);
+  const [startSearch, setStartSearch] = useState<any>();
+  const [routesContent, setRoutesContent] = useState<any>();
+  const [trainNumber, setTrainNumber] = useState<any>();
+  const [emailList, setEmailList] = useState<any>();
+  const [name, setName] = useState<any>();
+  const [bodyList, setBodyList] = useState<any>();
+  const [isRefresh, setIsRefresh] = useState<boolean>(false);
 
   const getData = async (body: any, name: any) => {
     const response = await fetch(
@@ -77,11 +37,9 @@ const TrainChecker = () => {
     try {
       setLoading(true);
       setError(null);
-
       const results = await Promise.all(
         bodyList.map((x: any) => getData(x.body, x?.name))
       );
-
       setResultData(results);
       setLastUpdated(new Date());
     } catch (err: any) {
@@ -104,35 +62,37 @@ const TrainChecker = () => {
   };
 
   useEffect(() => {
-    let cancelled = false;
+    if (startSearch) {
+      let cancelled = false;
 
-    const loop = async () => {
-      while (!cancelled) {
-        await resultFunc();
-        await new Promise((r) => setTimeout(r, 5000));
-      }
-    };
+      const loop = async () => {
+        while (!cancelled) {
+          await resultFunc();
+          await new Promise((r) => setTimeout(r, 5000));
+        }
+      };
 
-    loop();
+      loop();
 
-    setBodyList(
-      bodyList?.map((d: any) => {
-        if (d?.isSendEmail !== true && d?.isSendEmail !== false) {
-          if (dataControl(d?.isSendEmail)) {
-            return { ...d, isSendEmail: true };
+      setBodyList(
+        bodyList?.map((d: any) => {
+          if (d?.isSendEmail !== true && d?.isSendEmail !== false) {
+            if (dataControl(d?.isSendEmail)) {
+              return { ...d, isSendEmail: true };
+            } else {
+              return d;
+            }
           } else {
             return d;
           }
-        } else {
-          return d;
-        }
-      })
-    );
+        })
+      );
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+      return () => {
+        cancelled = true;
+      };
+    }
+  }, [startSearch, isRefresh]);
 
   const sendMail = (data: any, email: any) => {
     emailjs
@@ -161,30 +121,30 @@ const TrainChecker = () => {
     resultData?.forEach((x: any, index: number) => {
       x?.data?.trainLegs?.[0]?.trainAvailabilities?.forEach((e: any) => {
         const train = e?.trains?.[0];
-        if (String(train?.number) === bodyList[index]?.train) {
+        if (
+          bodyList[index]?.train?.find((g: any) => g === String(train?.number))
+        ) {
           const cabins = train?.cabinClassAvailabilities?.filter(
             (x: any) =>
               x?.cabinClass?.code === "Y1" || x?.cabinClass?.code === "C"
           );
           if (cabins?.length) {
-            const user = bodyList?.find(
-              (f: any) => f?.train === String(train?.number)
+            const user = bodyList?.find((f: any) =>
+              f?.train?.find((k: any) => String(k) === String(train?.number))
             );
-
             if (user?.isSendEmail === true) {
               const tempData = bodyList?.map((d: any) =>
-                d.train === String(train?.number)
+                d?.train?.find((k: any) => k === String(train?.number))
                   ? { ...d, isSendEmail: false }
                   : d
               );
               sendMail("Tren Bulundu", user?.email);
-              sendMail("Tren Bulundu", "enes.dongez@jforce.com");
               setBodyList(tempData);
             } else {
               if (user?.isSendEmail === false) {
                 setBodyList(
                   bodyList?.map((d: any) =>
-                    d.train === String(train?.number)
+                    d?.train?.find((k: any) => k === String(train?.number))
                       ? { ...d, isSendEmail: new Date() }
                       : d
                   )
@@ -206,6 +166,34 @@ const TrainChecker = () => {
     setFindData(tempData);
   }, [resultData]);
 
+  const addList = () => {
+    const tempData = {
+      name: name,
+      isSendEmail: true,
+      train: trainNumber.split(",").map((part: any) => part.trim()),
+      email: emailList.split(",").map((part: any) => part.trim()),
+      body: routesContent,
+    };
+
+    if (bodyList) {
+      setBodyList([...bodyList, tempData]);
+    } else {
+      setBodyList([tempData]);
+    }
+  };
+
+  const removeList = (name: any) => {
+    const tempData = bodyList?.filter((x: any) => x?.name !== name);
+    if (tempData?.length > 0) {
+      setBodyList(tempData);
+      setIsRefresh(!isRefresh);
+    } else {
+      setBodyList(null);
+      setStartSearch(false);
+      setIsRefresh(!isRefresh);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <h2 style={styles.header}>
@@ -214,20 +202,99 @@ const TrainChecker = () => {
           🚆
         </span>
       </h2>
-      <div style={styles.statusInfo}>
-        {loading && <p style={styles.loadingText}>Veri yükleniyor...</p>}
-        {error && <p style={styles.errorText}>Hata: {error}</p>}
-        {lastUpdated && !loading && (
-          <p style={styles.updatedText}>
-            Son Güncelleme:{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {lastUpdated.toLocaleTimeString()}
-            </span>
-          </p>
-        )}
+      {startSearch && (
+        <div style={styles.statusInfo}>
+          {loading && <p style={styles.loadingText}>Veri yükleniyor...</p>}
+          {error && <p style={styles.errorText}>Hata: {error}</p>}
+          {lastUpdated && !loading && (
+            <p style={styles.updatedText}>
+              Son Güncelleme:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {lastUpdated.toLocaleTimeString()}
+              </span>
+            </p>
+          )}
+        </div>
+      )}
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+          margin: 30,
+          justifyContent: "center",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="isim"
+          value={name}
+          onChange={(e: any) => setName(e?.target.value)}
+        />
+        <textarea
+          value={routesContent}
+          onChange={(e: any) => setRoutesContent(e?.target.value)}
+          placeholder="arama detayı.."
+        />
+        <input
+          type="text"
+          placeholder="tren numaraları.."
+          value={trainNumber}
+          onChange={(e: any) => setTrainNumber(e?.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="email listesi.."
+          value={emailList}
+          onChange={(e: any) => setEmailList(e?.target.value)}
+        />
+        <input
+          type="button"
+          value={"Ara"}
+          onClick={() => {
+            if (routesContent && emailList && trainNumber && name) {
+              setStartSearch(true);
+              setIsRefresh(!isRefresh);
+              addList();
+              setName("");
+              setRoutesContent("");
+              setTrainNumber("");
+              setEmailList("");
+            }
+          }}
+        />
       </div>
 
-      {findData && findData.length > 0
+      {bodyList && (
+        <div
+          style={{
+            display: "flex",
+            borderBottom: "2px solid #373737",
+            borderTop: "2px solid #373737",
+            padding: 10,
+          }}
+        >
+          {bodyList?.map((e: any, key: any) => {
+            return (
+              <div>
+                <b
+                  style={{
+                    color: "red",
+                    marginRight: 4,
+                    marginLeft: key === 0 ? 4 : 30,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => removeList(e?.name)}
+                >
+                  X
+                </b>
+                {e?.name}
+              </div>
+            );
+          })}{" "}
+        </div>
+      )}
+
+      {startSearch && findData && findData.length > 0
         ? findData?.map((x: any) => (
             <div style={styles.dataContainer}>
               <h1>{x?.name}</h1>
@@ -272,7 +339,7 @@ const TrainChecker = () => {
               </table>
             </div>
           ))
-        : "Veri Bulunamamıştır"}
+        : startSearch && "Veri Bulunamamıştır"}
     </div>
   );
 };

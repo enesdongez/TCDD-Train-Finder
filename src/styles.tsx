@@ -1,4 +1,3 @@
-
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     padding: 30,
