@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 import styles from "../styles";
+import TrainSearch from "./TrainSearch";
+import MultiSelect from "../input/MultiSelect";
 
 const TrainChecker = () => {
   const [loading, setLoading] = useState(true);
@@ -15,6 +17,8 @@ const TrainChecker = () => {
   const [name, setName] = useState<any>();
   const [bodyList, setBodyList] = useState<any>();
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
+  const [optionsList, setOptionsList] = useState<any>();
+  const [selectedStations, setSelectedStations] = useState<any>([]);
 
   const getData = async (body: any, name: any) => {
     const response = await fetch(
@@ -170,11 +174,10 @@ const TrainChecker = () => {
     const tempData = {
       name: name,
       isSendEmail: true,
-      train: trainNumber.split(",").map((part: any) => part.trim()),
+      train: selectedStations.map((part: any) => part.id),
       email: emailList.split(",").map((part: any) => part.trim()),
-      body: routesContent,
+      body: JSON.stringify(routesContent),
     };
-
     if (bodyList) {
       setBodyList([...bodyList, tempData]);
     } else {
@@ -196,150 +199,163 @@ const TrainChecker = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>
-        TCDD Tren Durum Kontrolü{" "}
-        <span role="img" aria-label="train">
-          🚆
-        </span>
-      </h2>
-      {startSearch && (
-        <div style={styles.statusInfo}>
-          {loading && <p style={styles.loadingText}>Veri yükleniyor...</p>}
-          {error && <p style={styles.errorText}>Hata: {error}</p>}
-          {lastUpdated && !loading && (
-            <p style={styles.updatedText}>
-              Son Güncelleme:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {lastUpdated.toLocaleTimeString()}
-              </span>
-            </p>
-          )}
-        </div>
-      )}
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          margin: 30,
-          justifyContent: "center",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="isim"
-          value={name}
-          onChange={(e: any) => setName(e?.target.value)}
-        />
-        <textarea
-          value={routesContent}
-          onChange={(e: any) => setRoutesContent(e?.target.value)}
-          placeholder="arama detayı.."
-        />
-        <input
-          type="text"
-          placeholder="tren numaraları.."
-          value={trainNumber}
-          onChange={(e: any) => setTrainNumber(e?.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="email listesi.."
-          value={emailList}
-          onChange={(e: any) => setEmailList(e?.target.value)}
-        />
-        <input
-          type="button"
-          value={"Ara"}
-          onClick={() => {
-            if (routesContent && emailList && trainNumber && name) {
-              setStartSearch(true);
-              setIsRefresh(!isRefresh);
-              addList();
-              setName("");
-              setRoutesContent("");
-              setTrainNumber("");
-              setEmailList("");
-            }
-          }}
+      <div>
+        <TrainSearch
+          setOptions={setOptionsList}
+          setRoutesContent={setRoutesContent}
         />
       </div>
-
-      {bodyList && (
-        <div
-          style={{
-            display: "flex",
-            borderBottom: "2px solid #373737",
-            borderTop: "2px solid #373737",
-            padding: 10,
-          }}
-        >
-          {bodyList?.map((e: any, key: any) => {
-            return (
-              <div>
-                <b
-                  style={{
-                    color: "red",
-                    marginRight: 4,
-                    marginLeft: key === 0 ? 4 : 30,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => removeList(e?.name)}
-                >
-                  X
-                </b>
-                {e?.name}
-              </div>
-            );
-          })}{" "}
-        </div>
-      )}
-
-      {startSearch && findData && findData.length > 0
-        ? findData?.map((x: any) => (
-            <div style={styles.dataContainer}>
-              <h1>{x?.name}</h1>
-              <h3 style={styles.dataHeader}>
-                {x?.train?.number + " - "} Sefer Numarası Müsaitlik
-              </h3>
-              <table style={styles.table}>
-                <thead>
-                  <tr style={styles.tableRow}>
-                    <th style={styles.tableHeaderCell}>Kabin Bölümü</th>
-                    <th style={styles.tableHeaderCell}>Müsait Koltuk Sayısı</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {x.data?.map((e: any, index: number) => (
-                    <tr
-                      key={index}
-                      style={{
-                        ...styles.tableRow,
-                        background: index % 2 === 0 ? "#2a2a2a" : "#1e1e1e",
-                      }}
-                    >
-                      <td style={styles.tableCell}>
-                        {e?.cabinClass?.name || "N/A"} (
-                        {e?.cabinClass?.code || ""})
-                      </td>
-                      <td
-                        style={{
-                          ...styles.tableCell,
-                          color:
-                            e?.availabilityCount > 0 ? "#82e982" : "#f08080",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {e?.availabilityCount !== undefined
-                          ? e?.availabilityCount
-                          : "Kontrol Edilemiyor"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {optionsList && (
+        <>
+          <h2 style={styles.header}>
+            TCDD Tren Durum Kontrolü{" "}
+            <span role="img" aria-label="train">
+              🚆
+            </span>
+          </h2>
+          {startSearch && (
+            <div style={styles.statusInfo}>
+              {loading && <p style={styles.loadingText}>Veri yükleniyor...</p>}
+              {error && <p style={styles.errorText}>Hata: {error}</p>}
+              {lastUpdated && !loading && (
+                <p style={styles.updatedText}>
+                  Son Güncelleme:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {lastUpdated.toLocaleTimeString()}
+                  </span>
+                </p>
+              )}
             </div>
-          ))
-        : startSearch && "Veri Bulunamamıştır"}
+          )}
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              margin: 30,
+              justifyContent: "center",
+            }}
+          >
+            <input
+              type="text"
+              placeholder="isim"
+              value={name}
+              onChange={(e: any) => setName(e?.target.value)}
+            />
+            {optionsList && (
+              <MultiSelect
+                options={optionsList || []}
+                selectedValues={selectedStations}
+                onChange={setSelectedStations}
+                placeholder="İstasyon seçiniz..."
+                displayKey="name"
+                valueKey="id"
+              />
+            )}
+            <input
+              type="text"
+              placeholder="email listesi.."
+              value={emailList}
+              onChange={(e: any) => setEmailList(e?.target.value)}
+            />
+            <input
+              type="button"
+              value={"Ara"}
+              onClick={() => {
+                if (routesContent && selectedStations && name) {
+                  setStartSearch(true);
+                  setIsRefresh(!isRefresh);
+                  addList();
+                  setName("");
+                  setEmailList("");
+                }
+              }}
+            />
+          </div>
+
+          {bodyList && (
+            <div
+              style={{
+                display: "flex",
+                borderBottom: "2px solid #373737",
+                borderTop: "2px solid #373737",
+                padding: 10,
+              }}
+            >
+              {bodyList?.map((e: any, key: any) => {
+                return (
+                  <div>
+                    <b
+                      style={{
+                        color: "red",
+                        marginRight: 4,
+                        marginLeft: key === 0 ? 4 : 30,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => removeList(e?.name)}
+                    >
+                      X
+                    </b>
+                    {e?.name}
+                  </div>
+                );
+              })}{" "}
+            </div>
+          )}
+
+          {startSearch && findData && findData.length > 0
+            ? findData?.map((x: any) => (
+                <div style={styles.dataContainer}>
+                  <h1>{x?.name}</h1>
+                  <h3 style={styles.dataHeader}>
+                    {x?.train?.number + " - "} Sefer Numarası Müsaitlik
+                  </h3>
+                  <table style={styles.table}>
+                    <thead>
+                      <tr style={styles.tableRow}>
+                        <th style={styles.tableHeaderCell}>Kabin Bölümü</th>
+                        <th style={styles.tableHeaderCell}>
+                          Müsait Koltuk Sayısı
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {x.data?.map((e: any, index: number) => (
+                        <tr
+                          key={index}
+                          style={{
+                            ...styles.tableRow,
+                            background: index % 2 === 0 ? "#2a2a2a" : "#1e1e1e",
+                          }}
+                        >
+                          <td style={styles.tableCell}>
+                            {e?.cabinClass?.name || "N/A"} (
+                            {e?.cabinClass?.code || ""})
+                          </td>
+                          <td
+                            style={{
+                              ...styles.tableCell,
+                              color:
+                                e?.availabilityCount > 0
+                                  ? "#82e982"
+                                  : "#f08080",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {e?.availabilityCount !== undefined
+                              ? e?.availabilityCount
+                              : "Kontrol Edilemiyor"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))
+            : startSearch && (
+                <div style={{ marginTop: 35 }}>Veri Bulunamamıştır</div>
+              )}
+        </>
+      )}
     </div>
   );
 };
