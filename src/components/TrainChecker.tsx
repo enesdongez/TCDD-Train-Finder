@@ -227,39 +227,72 @@ const TrainChecker = () => {
               )}
             </div>
           )}
+
           <div
             style={{
               display: "flex",
-              gap: 10,
-              margin: 30,
+              flexWrap: "wrap", // Küçük ekranlarda alt alta geçer
+              gap: "12px",
+              margin: "30px auto", // Ortalamak için auto ekledik
+              maxWidth: "1200px", // Formun çok fazla yayılmasını engeller
               justifyContent: "center",
+              alignItems: "stretch", // Tüm elemanların boyu eşit olur
+              padding: "0 15px", // Kenarlardan taşmayı önler
             }}
           >
+            {/* İsim Inputu */}
             <input
               type="text"
-              placeholder="isim"
+              placeholder="İsim"
               value={name}
               onChange={(e: any) => setName(e?.target.value)}
+              style={{
+                flex: "1 1 200px", // En az 200px yer kapla, sığmazsa aşağı geç
+                padding: "12px",
+                borderRadius: "6px",
+                border: "1px solid #333",
+                backgroundColor: "#1a1a1a",
+                color: "#fff",
+                outline: "none",
+              }}
             />
+
+            {/* İstasyon Seçimi - MultiSelect kapsayıcısı */}
             {optionsList && (
-              <MultiSelect
-                options={optionsList || []}
-                selectedValues={selectedStations}
-                onChange={setSelectedStations}
-                placeholder="İstasyon seçiniz..."
-                displayKey="name"
-                valueKey="id"
-              />
+              <div style={{ flex: "2 1 300px", minWidth: "250px" }}>
+                <MultiSelect
+                  options={optionsList || []}
+                  selectedValues={selectedStations}
+                  onChange={setSelectedStations}
+                  placeholder="İstasyon seçiniz..."
+                  displayKey="name"
+                  valueKey="id"
+                  // Not: MultiSelect bileşeninin kendi iç stillerinde genişliği %100 yapmalısın
+                />
+              </div>
             )}
+
+            {/* Email Listesi Inputu */}
             <input
               type="text"
-              placeholder="email listesi.."
+              placeholder="Email listesi (virgülle ayırın).."
               value={emailList}
               onChange={(e: any) => setEmailList(e?.target.value)}
+              style={{
+                flex: "1 1 250px",
+                padding: "12px",
+                borderRadius: "6px",
+                border: "1px solid #333",
+                backgroundColor: "#1a1a1a",
+                color: "#fff",
+                outline: "none",
+              }}
             />
+
+            {/* Ara Butonu */}
             <input
               type="button"
-              value={"Ara"}
+              value="Ara"
               onClick={() => {
                 if (routesContent && selectedStations && name) {
                   setStartSearch(true);
@@ -269,6 +302,24 @@ const TrainChecker = () => {
                   setEmailList("");
                 }
               }}
+              style={{
+                flex: "0 1 120px", // Buton çok büyümesin
+                minWidth: "100px",
+                padding: "12px 20px",
+                borderRadius: "6px",
+                border: "none",
+                backgroundColor: "#007bff", // Standart mavi buton rengi
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+                transition: "background 0.3s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#0056b3")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#007bff")
+              }
             />
           </div>
 

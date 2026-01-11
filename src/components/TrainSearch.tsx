@@ -239,10 +239,11 @@ const TrainSearch = (props: Props) => {
             gap: "10px",
             marginBottom: "15px",
             alignItems: "center",
+            flexWrap: "wrap"
           }}
         >
           {/* Nereden */}
-          <div style={{ flex: 1, position: "relative" }} ref={fromRef}>
+          <div style={{ flex: "1 1 200px", position: "relative" }} ref={fromRef}>
             <input
               type="text"
               value={fromSearchTerm}
@@ -310,7 +311,7 @@ const TrainSearch = (props: Props) => {
           </div>
 
           {/* Nereye */}
-          <div style={{ flex: 1, position: "relative" }} ref={toRef}>
+          <div style={{ flex: "1 1 200px", position: "relative" }} ref={toRef}>
             <input
               type="text"
               value={toSearchTerm}
@@ -379,7 +380,7 @@ const TrainSearch = (props: Props) => {
             )}
           </div>
 
-          <div style={{ flex: 1, position: "relative" }}>
+          <div style={{ flex: "1 1 200px", position: "relative" }}>
             <input
               type="date"
               value={travelDate}
