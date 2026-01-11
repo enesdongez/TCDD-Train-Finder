@@ -22,7 +22,7 @@ const TrainChecker = () => {
 
   const getData = async (body: any, name: any) => {
     const response = await fetch(
-      "http://localhost:7777/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
+      "https://train-finder-proxy.onrender.com/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
       {
         method: "POST",
         headers: {

@@ -27,7 +27,7 @@ const TrainSearch = (props: Props) => {
   useEffect(() => {
     if (!trainSelectList) {
       axios
-        .get("http://localhost:7777/proxy", {
+        .get("https://train-finder-proxy.onrender.com/proxy", {
           params: {
             url: "https://cdn-api-prod-ytp.tcddtasimacilik.gov.tr/datas/station-pairs-INTERNET.json?environment=dev&userId=1",
           },
@@ -118,7 +118,7 @@ const TrainSearch = (props: Props) => {
     });
     axios
       .post(
-        "http://localhost:7777/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
+        "https://train-finder-proxy.onrender.com/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
         {
           searchRoutes: [
             {
