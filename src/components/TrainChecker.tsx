@@ -32,7 +32,7 @@ const TrainChecker = () => {
           "Content-Type": "application/json",
         },
         body: body,
-      }
+      },
     );
     return { data: await response.json(), name: name };
   };
@@ -42,7 +42,7 @@ const TrainChecker = () => {
       setLoading(true);
       setError(null);
       const results = await Promise.all(
-        bodyList.map((x: any) => getData(x.body, x?.name))
+        bodyList.map((x: any) => getData(x.body, x?.name)),
       );
       setResultData(results);
       setLastUpdated(new Date());
@@ -89,7 +89,7 @@ const TrainChecker = () => {
           } else {
             return d;
           }
-        })
+        }),
       );
 
       return () => {
@@ -109,7 +109,7 @@ const TrainChecker = () => {
           subject: "Tren Bulundu",
           message_html: data,
         },
-        "lQSnSbW1ViMo7cq_W"
+        "lQSnSbW1ViMo7cq_W",
       )
       .then(() => {
         console.log("mail gönderildi");
@@ -130,17 +130,17 @@ const TrainChecker = () => {
         ) {
           const cabins = train?.cabinClassAvailabilities?.filter(
             (x: any) =>
-              x?.cabinClass?.code === "Y1" || x?.cabinClass?.code === "C"
+              x?.cabinClass?.code === "Y1" || x?.cabinClass?.code === "C",
           );
           if (cabins?.length) {
             const user = bodyList?.find((f: any) =>
-              f?.train?.find((k: any) => String(k) === String(train?.number))
+              f?.train?.find((k: any) => String(k) === String(train?.number)),
             );
             if (user?.isSendEmail === true) {
               const tempData = bodyList?.map((d: any) =>
                 d?.train?.find((k: any) => k === String(train?.number))
                   ? { ...d, isSendEmail: false }
-                  : d
+                  : d,
               );
               sendMail("Tren Bulundu", user?.email);
               setBodyList(tempData);
@@ -150,8 +150,8 @@ const TrainChecker = () => {
                   bodyList?.map((d: any) =>
                     d?.train?.find((k: any) => k === String(train?.number))
                       ? { ...d, isSendEmail: new Date() }
-                      : d
-                  )
+                      : d,
+                  ),
                 );
               }
             }
@@ -298,8 +298,6 @@ const TrainChecker = () => {
                   setStartSearch(true);
                   setIsRefresh(!isRefresh);
                   addList();
-                  setName("");
-                  setEmailList("");
                 }
               }}
               style={{
