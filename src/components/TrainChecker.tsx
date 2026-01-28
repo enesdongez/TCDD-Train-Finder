@@ -19,6 +19,7 @@ const TrainChecker = () => {
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
   const [optionsList, setOptionsList] = useState<any>();
   const [selectedStations, setSelectedStations] = useState<any>([]);
+  const [isClose, setIsClose] = useState<boolean>(true);
 
   const getData = async (body: any, name: any) => {
     const response = await fetch(
@@ -78,19 +79,7 @@ const TrainChecker = () => {
 
       loop();
 
-      setBodyList(
-        bodyList?.map((d: any) => {
-          if (d?.isSendEmail !== true && d?.isSendEmail !== false) {
-            if (dataControl(d?.isSendEmail)) {
-              return { ...d, isSendEmail: true };
-            } else {
-              return d;
-            }
-          } else {
-            return d;
-          }
-        }),
-      );
+      setBodyList(bodyList);
 
       return () => {
         cancelled = true;
@@ -98,23 +87,25 @@ const TrainChecker = () => {
     }
   }, [startSearch, isRefresh]);
 
-  const sendMail = (data: any, email: any) => {
-    emailjs
-      .send(
-        "service_8hv2vlt",
-        "template_2q3wlyi",
-        {
-          to_email: email,
-          from_name: "Tren Bulucu",
-          subject: "Tren Bulundu",
-          message_html: data,
-        },
-        "lQSnSbW1ViMo7cq_W",
-      )
-      .then(() => {
-        console.log("mail gönderildi");
-      })
-      .catch((err) => console.error("Mail gönderme hatası:", err));
+  const sendMail = (data: any, email: any, isSend: boolean) => {
+    if (isSend) {
+      emailjs
+        .send(
+          "service_8hv2vlt",
+          "template_2q3wlyi",
+          {
+            to_email: email,
+            from_name: "Tren Bulucu",
+            subject: "Tren Bulundu",
+            message_html: data,
+          },
+          "lQSnSbW1ViMo7cq_W",
+        )
+        .then(() => {
+          console.log("mail gönderildi");
+        })
+        .catch((err) => console.error("Mail gönderme hatası:", err));
+    }
   };
 
   useEffect(() => {
@@ -136,25 +127,13 @@ const TrainChecker = () => {
             const user = bodyList?.find((f: any) =>
               f?.train?.find((k: any) => String(k) === String(train?.number)),
             );
-            if (user?.isSendEmail === true) {
-              const tempData = bodyList?.map((d: any) =>
-                d?.train?.find((k: any) => k === String(train?.number))
-                  ? { ...d, isSendEmail: false }
-                  : d,
-              );
-              sendMail("Tren Bulundu", user?.email);
-              setBodyList(tempData);
-            } else {
-              if (user?.isSendEmail === false) {
-                setBodyList(
-                  bodyList?.map((d: any) =>
-                    d?.train?.find((k: any) => k === String(train?.number))
-                      ? { ...d, isSendEmail: new Date() }
-                      : d,
-                  ),
-                );
-              }
-            }
+            const tempData2 = bodyList?.map((d: any) =>
+              d?.train?.find((k: any) => k === String(train?.number))
+                ? { ...d, isSendEmail: false }
+                : d,
+            );
+            sendMail("Tren Bulundu - " + user?.name, user?.email, isClose);
+            setBodyList(tempData2);
 
             const audio = new Audio("alert2.mp3");
             console.log("buldu", new Date());
@@ -162,6 +141,9 @@ const TrainChecker = () => {
               console.log("Tarayıcı otomatik çalmaya izin vermedi");
             });
             tempData.push({ train: train, data: cabins, name: x?.name });
+            setIsClose(false);
+          } else {
+            setIsClose(true);
           }
         }
       });
