@@ -36,17 +36,17 @@ const MultiSelect = ({
   }, []);
 
   const filteredOptions = options.filter((option) =>
-    option[displayKey].toLowerCase().includes(searchTerm.toLowerCase())
+    option[displayKey].toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleToggle = (option: any) => {
     const isSelected = selectedValues.some(
-      (item) => item[valueKey] === option[valueKey]
+      (item) => item[valueKey] === option[valueKey],
     );
 
     if (isSelected) {
       onChange(
-        selectedValues.filter((item) => item[valueKey] !== option[valueKey])
+        selectedValues.filter((item) => item[valueKey] !== option[valueKey]),
       );
     } else {
       onChange([...selectedValues, option]);
@@ -55,7 +55,7 @@ const MultiSelect = ({
 
   const handleRemove = (option: any) => {
     onChange(
-      selectedValues.filter((item) => item[valueKey] !== option[valueKey])
+      selectedValues.filter((item) => item[valueKey] !== option[valueKey]),
     );
   };
 
@@ -69,36 +69,41 @@ const MultiSelect = ({
       <div
         onClick={() => setIsOpen(!isOpen)}
         style={{
-          width: "100%",
-          minHeight: "44px",
+          width: "350px",
+          height: "45px",
+          overflow: "auto",
           padding: "8px 12px",
-          border: "1px solid white",
-          borderRadius: "4px",
-           backgroundColor: "white",
-          color: "#999",
+          border: "1px solid #444",
+          borderRadius: "8px",
+          backgroundColor: "#2a2a2a",
+          color: "#fff",
           cursor: "pointer",
           display: "flex",
           flexWrap: "wrap",
-          gap: "6px",
+          gap: "8px",
           alignItems: "center",
           boxSizing: "border-box",
+          transition: "border-color 0.2s",
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#666")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#444")}
       >
         {selectedValues.length === 0 ? (
-          <span style={{ color: "#666" }}>{placeholder}</span>
+          <span style={{ color: "#777", fontSize: "14px" }}>{placeholder}</span>
         ) : (
           selectedValues.map((item) => (
             <span
               key={item[valueKey]}
               style={{
-                backgroundColor: "#000000ff",
-                color: "white",
-                padding: "9px 8px",
-                borderRadius: "4px",
+                backgroundColor: "#3d3d3d",
+                color: "#BB86FC",
+                padding: "4px 10px",
+                borderRadius: "6px",
                 fontSize: "13px",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                gap: "8px",
+                border: "1px solid #555",
               }}
             >
               {item[displayKey]}
@@ -110,11 +115,13 @@ const MultiSelect = ({
                 style={{
                   background: "none",
                   border: "none",
-                  color: "white",
+                  color: "#CF6679",
                   cursor: "pointer",
                   padding: "0",
-                  fontSize: "16px",
+                  fontSize: "18px",
                   lineHeight: "1",
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
                 ×
@@ -132,15 +139,16 @@ const MultiSelect = ({
             top: "100%",
             left: 0,
             right: 0,
-            marginTop: "4px",
-             backgroundColor: "#1a1a1a",
-            border: "1px solid #333",
-            borderRadius: "4px",
+            marginTop: "8px",
+            backgroundColor: "#252525",
+            border: "1px solid #444",
+            borderRadius: "8px",
             zIndex: 1000,
-            maxHeight: "300px",
+            maxHeight: "350px",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
           }}
         >
           {/* Search Input */}
@@ -148,13 +156,13 @@ const MultiSelect = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Ara..."
+            placeholder="İstasyon veya tren ara..."
             style={{
-              padding: "10px 12px",
+              padding: "12px 16px",
               border: "none",
               borderBottom: "1px solid #333",
-               backgroundColor: "#1a1a1a",
-              color: "#999",
+              backgroundColor: "#2a2a2a",
+              color: "#fff",
               fontSize: "14px",
               outline: "none",
             }}
@@ -162,48 +170,75 @@ const MultiSelect = ({
           />
 
           {/* Options List */}
-          <div style={{ overflowY: "auto", maxHeight: "250px" }}>
+          <div style={{ overflowY: "auto", maxHeight: "300px" }}>
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <div
                   key={option[valueKey]}
                   onClick={() => handleToggle(option)}
                   style={{
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     cursor: "pointer",
                     borderBottom: "1px solid #333",
-                    color: "#999",
+                    color: isSelected(option) ? "#BB86FC" : "#ccc",
                     display: "flex",
                     alignItems: "center",
-                    gap: "10px",
-                    // backgroundColor: isSelected(option) ? "#252525" : "#1a1a1a",
+                    gap: "12px",
+                    backgroundColor: isSelected(option)
+                      ? "#2d2d2d"
+                      : "transparent",
+                    transition: "background 0.2s",
                   }}
                   onMouseEnter={(e) => {
                     if (!isSelected(option)) {
-                      e.currentTarget.style.backgroundColor = "#252525";
+                      e.currentTarget.style.backgroundColor = "#333";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isSelected(option)) {
-                      e.currentTarget.style.backgroundColor = "#1a1a1a";
+                      e.currentTarget.style.backgroundColor = "transparent";
                     }
                   }}
                 >
-                  <input
-                    type="checkbox"
-                    checked={isSelected(option)}
-                    readOnly
+                  <div
                     style={{
-                      cursor: "pointer",
-                      accentColor: "#666",
+                      width: "18px",
+                      height: "18px",
+                      borderRadius: "4px",
+                      border: "2px solid",
+                      borderColor: isSelected(option) ? "#BB86FC" : "#555",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: isSelected(option)
+                        ? "#BB86FC"
+                        : "transparent",
+                      transition: "all 0.2s",
                     }}
-                  />
-                  {option[displayKey]}
+                  >
+                    {isSelected(option) && (
+                      <span
+                        style={{
+                          color: "#000",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                  <span style={{ fontSize: "14px" }}>{option[displayKey]}</span>
                 </div>
               ))
             ) : (
               <div
-                style={{ padding: "12px", color: "#666", textAlign: "center" }}
+                style={{
+                  padding: "20px",
+                  color: "#666",
+                  textAlign: "center",
+                  fontSize: "14px",
+                }}
               >
                 Sonuç bulunamadı
               </div>

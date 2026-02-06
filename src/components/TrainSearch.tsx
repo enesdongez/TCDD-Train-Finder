@@ -221,202 +221,278 @@ const TrainSearch = (props: Props) => {
     <div
       style={{
         width: "100%",
-        fontFamily: "Arial, sans-serif",
-        margin: "50px 0px 150px 0px",
+        fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        margin: "40px 0 60px 0",
+        background: "#1e1e1e",
+        padding: "30px",
+        borderRadius: "12px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+        border: "1px solid #333",
       }}
     >
-      <h2 style={styles.header}>TCDD Tren Seç 🚂</h2>
+      <h2
+        style={{
+          ...styles.header,
+          borderBottom: "none",
+          marginBottom: "25px",
+          fontSize: "24px",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <span>🚆</span> Tren Seferlerini Bul
+      </h2>
 
       <div
         style={{
-          borderTop: "1px solid #333",
-          paddingTop: "20px",
+          display: "flex",
+          gap: "15px",
+          alignItems: "flex-end",
+          flexWrap: "wrap",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            marginBottom: "15px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          {/* Nereden */}
-          <div
-            style={{ flex: "1 1 200px", position: "relative" }}
-            ref={fromRef}
-          >
-            <input
-              type="text"
-              value={fromSearchTerm}
-              onChange={(e) => {
-                setFromSearchTerm(e.target.value);
-                setShowFromDropdown(true);
-              }}
-              onFocus={() => setShowFromDropdown(true)}
-              placeholder="Nereden"
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #333",
-                borderRadius: "4px",
-                fontSize: "14px",
-                cursor: "text",
-                color: "#999",
-                boxSizing: "border-box",
-              }}
-            />
-            {showFromDropdown && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  right: 0,
-                  maxHeight: "250px",
-                  overflowY: "auto",
-                  backgroundColor: "#1a1a1a",
-                  border: "1px solid #333",
-                  borderRadius: "4px",
-                  marginTop: "4px",
-                  zIndex: 1000,
-                }}
-              >
-                {getFilteredFromStations()?.length > 0 ? (
-                  getFilteredFromStations().map((station: any) => (
-                    <div
-                      key={station.id}
-                      onClick={() => handleFromSelect(station)}
-                      style={{
-                        padding: "12px",
-                        cursor: "pointer",
-                        borderBottom: "1px solid #333",
-                        color: "#999",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#252525")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#1a1a1a")
-                      }
-                    >
-                      {station.name}
-                    </div>
-                  ))
-                ) : (
-                  <div style={{ padding: "12px", color: "#666" }}>
-                    Sonuç bulunamadı
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Nereye */}
-          <div style={{ flex: "1 1 200px", position: "relative" }} ref={toRef}>
-            <input
-              type="text"
-              value={toSearchTerm}
-              onChange={(e) => {
-                setToSearchTerm(e.target.value);
-                setShowToDropdown(true);
-              }}
-              onFocus={() => setShowToDropdown(true)}
-              disabled={!fromStation}
-              placeholder="Nereye"
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #333",
-                borderRadius: "4px",
-                fontSize: "14px",
-                cursor: fromStation ? "text" : "not-allowed",
-                color: "#999",
-                opacity: fromStation ? 1 : 0.5,
-                boxSizing: "border-box",
-              }}
-            />
-            {showToDropdown && fromStation && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  right: 0,
-                  maxHeight: "250px",
-                  backgroundColor: "#1a1a1a",
-                  overflowY: "auto",
-                  border: "1px solid #333",
-                  borderRadius: "4px",
-                  marginTop: "4px",
-                  zIndex: 1000,
-                }}
-              >
-                {getFilteredToStationsSearch()?.length > 0 ? (
-                  getFilteredToStationsSearch().map((station: any) => (
-                    <div
-                      key={station.id}
-                      onClick={() => handleToSelect(station)}
-                      style={{
-                        padding: "12px",
-                        cursor: "pointer",
-                        borderBottom: "1px solid #333",
-                        color: "#999",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#252525")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#1a1a1a")
-                      }
-                    >
-                      {station.name}
-                    </div>
-                  ))
-                ) : (
-                  <div style={{ padding: "12px", color: "#666" }}>
-                    Sonuç bulunamadı
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div style={{ flex: "1 1 200px", position: "relative" }}>
-            <input
-              type="date"
-              value={travelDate}
-              onChange={(e) => setTravelDate(e.target.value)}
-              min={getTodayDate()}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #333",
-                borderRadius: "4px",
-                fontSize: "14px",
-                // backgroundColor: "#1a1a1a",
-                color: "#999",
-                boxSizing: "border-box",
-                // colorScheme: "dark", // Date picker'ı dark mode yapar
-              }}
-            />
-          </div>
-
-          <button
-            onClick={handleSearch}
+        {/* Nereden */}
+        <div style={{ flex: "2 1 200px", position: "relative" }} ref={fromRef}>
+          <label
             style={{
-              padding: "12px 24px",
-              color: "#999",
-              border: "1px solid #333",
-              borderRadius: "4px",
-              fontSize: "14px",
-              cursor: "pointer",
+              display: "block",
+              color: "#888",
+              marginBottom: "8px",
+              fontSize: "12px",
+              fontWeight: "600",
+              textTransform: "uppercase",
             }}
           >
-            Ara
-          </button>
+            Nereden
+          </label>
+          <input
+            type="text"
+            value={fromSearchTerm}
+            onChange={(e) => {
+              setFromSearchTerm(e.target.value);
+              setShowFromDropdown(true);
+            }}
+            onFocus={() => setShowFromDropdown(true)}
+            placeholder="Kalkış İstasyonu"
+            style={{
+              width: "100%",
+              padding: "14px",
+              backgroundColor: "#2a2a2a",
+              border: "1px solid #444",
+              borderRadius: "8px",
+              fontSize: "15px",
+              color: "#fff",
+              boxSizing: "border-box",
+              transition: "border-color 0.2s",
+              outline: "none",
+            }}
+          />
+          {showFromDropdown && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                right: 0,
+                maxHeight: "300px",
+                overflowY: "auto",
+                backgroundColor: "#252525",
+                border: "1px solid #444",
+                borderRadius: "8px",
+                marginTop: "8px",
+                zIndex: 1000,
+                boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+              }}
+            >
+              {getFilteredFromStations()?.length > 0 ? (
+                getFilteredFromStations().map((station: any) => (
+                  <div
+                    key={station.id}
+                    onClick={() => handleFromSelect(station)}
+                    style={{
+                      padding: "12px 16px",
+                      cursor: "pointer",
+                      borderBottom: "1px solid #333",
+                      color: "#ccc",
+                      transition: "background 0.2s",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#333")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "transparent")
+                    }
+                  >
+                    {station.name}
+                  </div>
+                ))
+              ) : (
+                <div
+                  style={{
+                    padding: "16px",
+                    color: "#777",
+                    textAlign: "center",
+                  }}
+                >
+                  Sonuç bulunamadı
+                </div>
+              )}
+            </div>
+          )}
         </div>
+
+        {/* Nereye */}
+        <div style={{ flex: "2 1 200px", position: "relative" }} ref={toRef}>
+          <label
+            style={{
+              display: "block",
+              color: "#888",
+              marginBottom: "8px",
+              fontSize: "12px",
+              fontWeight: "600",
+              textTransform: "uppercase",
+            }}
+          >
+            Nereye
+          </label>
+          <input
+            type="text"
+            value={toSearchTerm}
+            onChange={(e) => {
+              setToSearchTerm(e.target.value);
+              setShowToDropdown(true);
+            }}
+            onFocus={() => setShowToDropdown(true)}
+            disabled={!fromStation}
+            placeholder="Varış İstasyonu"
+            style={{
+              width: "100%",
+              padding: "14px",
+              backgroundColor: fromStation ? "#2a2a2a" : "#1a1a1a",
+              border: "1px solid #444",
+              borderRadius: "8px",
+              fontSize: "15px",
+              color: fromStation ? "#fff" : "#555",
+              cursor: fromStation ? "text" : "not-allowed",
+              boxSizing: "border-box",
+              transition: "border-color 0.2s",
+              outline: "none",
+            }}
+          />
+          {showToDropdown && fromStation && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                right: 0,
+                maxHeight: "300px",
+                backgroundColor: "#252525",
+                overflowY: "auto",
+                border: "1px solid #444",
+                borderRadius: "8px",
+                marginTop: "8px",
+                zIndex: 1000,
+                boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+              }}
+            >
+              {getFilteredToStationsSearch()?.length > 0 ? (
+                getFilteredToStationsSearch().map((station: any) => (
+                  <div
+                    key={station.id}
+                    onClick={() => handleToSelect(station)}
+                    style={{
+                      padding: "12px 16px",
+                      cursor: "pointer",
+                      borderBottom: "1px solid #333",
+                      color: "#ccc",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#333")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "transparent")
+                    }
+                  >
+                    {station.name}
+                  </div>
+                ))
+              ) : (
+                <div
+                  style={{
+                    padding: "16px",
+                    color: "#777",
+                    textAlign: "center",
+                  }}
+                >
+                  Sonuç bulunamadı
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Tarih */}
+        <div style={{ flex: "1 1 150px" }}>
+          <label
+            style={{
+              display: "block",
+              color: "#888",
+              marginBottom: "8px",
+              fontSize: "12px",
+              fontWeight: "600",
+              textTransform: "uppercase",
+            }}
+          >
+            Gidiş Tarihi
+          </label>
+          <input
+            type="date"
+            value={travelDate}
+            onChange={(e) => setTravelDate(e.target.value)}
+            min={getTodayDate()}
+            style={{
+              width: "100%",
+              padding: "13px",
+              backgroundColor: "#2a2a2a",
+              border: "1px solid #444",
+              borderRadius: "8px",
+              fontSize: "15px",
+              color: "#fff",
+              boxSizing: "border-box",
+              outline: "none",
+              colorScheme: "dark",
+            }}
+          />
+        </div>
+
+        {/* Ara Button */}
+        <button
+          onClick={handleSearch}
+          style={{
+            padding: "14px 40px",
+            backgroundColor: "#BB86FC",
+            color: "#000",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "all 0.2s",
+            boxShadow: "0 4px 14px rgba(187, 134, 252, 0.3)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#d1aaff";
+            e.currentTarget.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "#BB86FC";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          Seferleri Getir
+        </button>
       </div>
     </div>
   );

@@ -185,172 +185,334 @@ const TrainChecker = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div>
-        <TrainSearch
-          setOptions={setOptionsList}
-          setRoutesContent={setRoutesContent}
-        />
-      </div>
+    <div
+      style={{
+        ...styles.container,
+        maxWidth: "1200px",
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <TrainSearch
+        setOptions={setOptionsList}
+        setRoutesContent={setRoutesContent}
+      />
+
       {optionsList && (
-        <>
-          <h2 style={styles.header}>
-            TCDD Tren Durum Kontrolü{" "}
-            <span role="img" aria-label="train">
-              🚆
-            </span>
+        <div
+          style={{
+            background: "#1e1e1e",
+            padding: "30px",
+            borderRadius: "12px",
+            border: "1px solid #333",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+          }}
+        >
+          <h2
+            style={{
+              ...styles.header,
+              borderBottom: "none",
+              marginBottom: "25px",
+              fontSize: "24px",
+              color: "#03DAC6",
+            }}
+          >
+            🔍 Otomatik Takip Oluştur
           </h2>
-          {startSearch && (
-            <div style={styles.statusInfo}>
-              {loading && <p style={styles.loadingText}>Veri yükleniyor...</p>}
-              {error && <p style={styles.errorText}>Hata: {error}</p>}
-              {lastUpdated && !loading && (
-                <p style={styles.updatedText}>
-                  Son Güncelleme:{" "}
-                  <span style={{ fontWeight: "bold" }}>
-                    {lastUpdated.toLocaleTimeString()}
-                  </span>
-                </p>
-              )}
-            </div>
-          )}
 
           <div
             style={{
               display: "flex",
-              flexWrap: "wrap", // Küçük ekranlarda alt alta geçer
-              gap: "12px",
-              margin: "30px auto", // Ortalamak için auto ekledik
-              maxWidth: "1200px", // Formun çok fazla yayılmasını engeller
-              justifyContent: "center",
-              alignItems: "stretch", // Tüm elemanların boyu eşit olur
-              padding: "0 15px", // Kenarlardan taşmayı önler
+              flexWrap: "wrap",
+              gap: "20px",
+              alignItems: "flex-end",
+              marginBottom: "30px",
             }}
           >
-            {/* İsim Inputu */}
-            <input
-              type="text"
-              placeholder="İsim"
-              value={name}
-              onChange={(e: any) => setName(e?.target.value)}
-              style={{
-                flex: "1 1 200px", // En az 200px yer kapla, sığmazsa aşağı geç
-                padding: "12px",
-                borderRadius: "6px",
-                border: "1px solid #333",
-                backgroundColor: "#1a1a1a",
-                color: "#fff",
-                outline: "none",
-              }}
-            />
+            {/* İsim */}
+            <div style={{ flex: "1 1 200px" }}>
+              <label
+                style={{
+                  display: "block",
+                  color: "#888",
+                  marginBottom: "8px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  textTransform: "uppercase",
+                }}
+              >
+                Takip Adı
+              </label>
+              <input
+                type="text"
+                placeholder="Örn: Hafta Sonu Gezisi"
+                value={name}
+                onChange={(e: any) => setName(e?.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "13px",
+                  borderRadius: "8px",
+                  border: "1px solid #444",
+                  backgroundColor: "#2a2a2a",
+                  color: "#fff",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
 
-            {/* İstasyon Seçimi - MultiSelect kapsayıcısı */}
-            {optionsList && (
-              <div style={{ flex: "2 1 300px", minWidth: "250px" }}>
-                <MultiSelect
-                  options={optionsList || []}
-                  selectedValues={selectedStations}
-                  onChange={setSelectedStations}
-                  placeholder="İstasyon seçiniz..."
-                  displayKey="name"
-                  valueKey="id"
-                  // Not: MultiSelect bileşeninin kendi iç stillerinde genişliği %100 yapmalısın
-                />
-              </div>
-            )}
+            {/* İstasyonlar */}
+            <div style={{ flex: "2 1 300px" }}>
+              <label
+                style={{
+                  display: "block",
+                  color: "#888",
+                  marginBottom: "8px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  textTransform: "uppercase",
+                }}
+              >
+                Trenleri Seç
+              </label>
+              <MultiSelect
+                options={optionsList || []}
+                selectedValues={selectedStations}
+                onChange={setSelectedStations}
+                placeholder="İzlenecek trenleri seçin..."
+                displayKey="name"
+                valueKey="id"
+              />
+            </div>
 
-            {/* Email Listesi Inputu */}
-            <input
-              type="text"
-              placeholder="Email listesi (virgülle ayırın).."
-              value={emailList}
-              onChange={(e: any) => setEmailList(e?.target.value)}
-              style={{
-                flex: "1 1 250px",
-                padding: "12px",
-                borderRadius: "6px",
-                border: "1px solid #333",
-                backgroundColor: "#1a1a1a",
-                color: "#fff",
-                outline: "none",
-              }}
-            />
-
-            {/* Ara Butonu */}
-            <input
-              type="button"
-              value="Ara"
-              onClick={() => {
-                if (routesContent && selectedStations && name) {
-                  setStartSearch(true);
-                  setIsRefresh(!isRefresh);
-                  addList();
+            {/* Email */}
+            <div style={{ flex: "2 1 250px" }}>
+              <label
+                style={{
+                  display: "block",
+                  color: "#888",
+                  marginBottom: "8px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  textTransform: "uppercase",
+                }}
+              >
+                Bildirim E-postaları
+              </label>
+              <input
+                type="text"
+                placeholder="virgülle ayırın (mail1@test.com, ...)"
+                value={emailList}
+                onChange={(e: any) => setEmailList(e?.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "13px",
+                  borderRadius: "8px",
+                  border: "1px solid #444",
+                  backgroundColor: "#2a2a2a",
+                  color: "#fff",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+            <div
+              style={{ display: "flex", justifyContent: "end", width: "100%" }}
+            >
+              {/* Takip Et Butonu */}
+              <button
+                onClick={() => {
+                  if (routesContent && selectedStations.length > 0 && name) {
+                    setStartSearch(true);
+                    setIsRefresh(!isRefresh);
+                    addList();
+                  }
+                }}
+                style={{
+                  flex: "0 1 150px",
+                  padding: "14px 25px",
+                  borderRadius: "8px",
+                  border: "none",
+                  backgroundColor: "#03DAC6",
+                  color: "#000",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  boxShadow: "0 4px 14px rgba(3, 218, 198, 0.2)",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#05f0d9")
                 }
-              }}
-              style={{
-                flex: "0 1 120px", // Buton çok büyümesin
-                minWidth: "100px",
-                padding: "12px 20px",
-                borderRadius: "6px",
-                border: "none",
-                backgroundColor: "#007bff", // Standart mavi buton rengi
-                color: "white",
-                fontWeight: "bold",
-                cursor: "pointer",
-                transition: "background 0.3s",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#0056b3")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#007bff")
-              }
-            />
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#03DAC6")
+                }
+              >
+                Takibi Başlat
+              </button>
+            </div>
           </div>
 
-          {bodyList && (
-            <div
-              style={{
-                display: "flex",
-                borderBottom: "2px solid #373737",
-                borderTop: "2px solid #373737",
-                padding: 10,
-              }}
-            >
-              {bodyList?.map((e: any, key: any) => {
-                return (
-                  <div>
-                    <b
+          {/* Aktif Takipler Listesi */}
+          {bodyList && bodyList.length > 0 && (
+            <div style={{ marginBottom: "30px" }}>
+              <label
+                style={{
+                  display: "block",
+                  color: "#888",
+                  marginBottom: "12px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  textTransform: "uppercase",
+                }}
+              >
+                Aktif İzlenenler
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                {bodyList?.map((e: any, key: any) => (
+                  <div
+                    key={key}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      backgroundColor: "#2a2a2a",
+                      padding: "8px 15px",
+                      borderRadius: "20px",
+                      border: "1px solid #444",
+                      color: "#BB86FC",
+                      fontSize: "14px",
+                    }}
+                  >
+                    <span style={{ marginRight: "10px" }}>{e?.name}</span>
+                    <span
                       style={{
-                        color: "red",
-                        marginRight: 4,
-                        marginLeft: key === 0 ? 4 : 30,
+                        color: "#CF6679",
                         cursor: "pointer",
+                        fontWeight: "bold",
+                        fontSize: "18px",
+                        lineHeight: "1",
                       }}
                       onClick={() => removeList(e?.name)}
                     >
-                      X
-                    </b>
-                    {e?.name}
+                      ×
+                    </span>
                   </div>
-                );
-              })}{" "}
+                ))}
+              </div>
             </div>
           )}
 
-          {startSearch && findData && findData.length > 0
-            ? findData?.map((x: any) => (
-                <div style={styles.dataContainer}>
-                  <h1>{x?.name}</h1>
-                  <h3 style={styles.dataHeader}>
-                    {x?.train?.number + " - "} Sefer Numarası Müsaitlik
-                  </h3>
+          {/* Arama Durumu */}
+          {startSearch && (
+            <div
+              style={{
+                padding: "15px",
+                borderRadius: "8px",
+                backgroundColor: "#1a1a1a",
+                border: "1px solid #333",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "10px" }}
+              >
+                {loading && (
+                  <div
+                    className="spinner"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      border: "2px solid #03DAC6",
+                      borderTopColor: "transparent",
+                      borderRadius: "50%",
+                      animation: "spin 1s linear infinite",
+                    }}
+                  />
+                )}
+                <span
+                  style={{
+                    color: loading ? "#FDD835" : "#03DAC6",
+                    fontWeight: "500",
+                  }}
+                >
+                  {loading ? "Sorgulanıyor..." : "Otomatik kontrol aktif"}
+                </span>
+              </div>
+              {lastUpdated && (
+                <span style={{ color: "#666", fontSize: "13px" }}>
+                  Son Kontrol:{" "}
+                  <strong>{lastUpdated.toLocaleTimeString()}</strong>
+                </span>
+              )}
+            </div>
+          )}
+
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+          {/* Sonuçlar */}
+          <div style={{ marginTop: "20px" }}>
+            {startSearch && findData && findData.length > 0 ? (
+              findData?.map((x: any, idx: number) => (
+                <div
+                  key={idx}
+                  style={{
+                    ...styles.dataContainer,
+                    border: "1px solid #333",
+                    background: "#1a1a1a",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <h2
+                      style={{ margin: 0, color: "#BB86FC", fontSize: "20px" }}
+                    >
+                      {x?.name}
+                    </h2>
+                    <span
+                      style={{
+                        padding: "4px 12px",
+                        background: "#333",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        color: "#888",
+                      }}
+                    >
+                      Tren No: {x?.train?.number}
+                    </span>
+                  </div>
+
                   <table style={styles.table}>
                     <thead>
-                      <tr style={styles.tableRow}>
-                        <th style={styles.tableHeaderCell}>Kabin Bölümü</th>
-                        <th style={styles.tableHeaderCell}>
-                          Müsait Koltuk Sayısı
+                      <tr>
+                        <th
+                          style={{
+                            ...styles.tableHeaderCell,
+                            borderBottomColor: "#333",
+                            color: "#888",
+                          }}
+                        >
+                          Kabin Tipi
+                        </th>
+                        <th
+                          style={{
+                            ...styles.tableHeaderCell,
+                            borderBottomColor: "#333",
+                            color: "#888",
+                            textAlign: "right",
+                          }}
+                        >
+                          Durum
                         </th>
                       </tr>
                     </thead>
@@ -358,28 +520,44 @@ const TrainChecker = () => {
                       {x.data?.map((e: any, index: number) => (
                         <tr
                           key={index}
-                          style={{
-                            ...styles.tableRow,
-                            background: index % 2 === 0 ? "#2a2a2a" : "#1e1e1e",
-                          }}
+                          style={{ borderBottom: "1px solid #222" }}
                         >
-                          <td style={styles.tableCell}>
-                            {e?.cabinClass?.name || "N/A"} (
-                            {e?.cabinClass?.code || ""})
+                          <td
+                            style={{
+                              ...styles.tableCell,
+                              padding: "15px 12px",
+                              color: "#ccc",
+                            }}
+                          >
+                            {e?.cabinClass?.name} ({e?.cabinClass?.code})
                           </td>
                           <td
                             style={{
                               ...styles.tableCell,
-                              color:
-                                e?.availabilityCount > 0
-                                  ? "#82e982"
-                                  : "#f08080",
-                              fontWeight: "bold",
+                              padding: "15px 12px",
+                              textAlign: "right",
                             }}
                           >
-                            {e?.availabilityCount !== undefined
-                              ? e?.availabilityCount
-                              : "Kontrol Edilemiyor"}
+                            <span
+                              style={{
+                                padding: "4px 12px",
+                                borderRadius: "12px",
+                                fontWeight: "bold",
+                                fontSize: "14px",
+                                backgroundColor:
+                                  e?.availabilityCount > 0
+                                    ? "rgba(130, 233, 130, 0.1)"
+                                    : "rgba(240, 128, 128, 0.1)",
+                                color:
+                                  e?.availabilityCount > 0
+                                    ? "#82e982"
+                                    : "#f08080",
+                              }}
+                            >
+                              {e?.availabilityCount > 0
+                                ? `${e.availabilityCount} Koltuk`
+                                : "Dolu"}
+                            </span>
                           </td>
                         </tr>
                       ))}
@@ -387,12 +565,25 @@ const TrainChecker = () => {
                   </table>
                 </div>
               ))
-            : startSearch && (
-                <div style={{ marginTop: 35 }}>Veri Bulunamamıştır</div>
-              )}
-        </>
+            ) : startSearch && !loading ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "40px",
+                  color: "#666",
+                  background: "#1a1a1a",
+                  borderRadius: "8px",
+                  border: "1px dashed #333",
+                }}
+              >
+                Uygun koltuk bulunamadı, sistem kontrol etmeye devam ediyor...
+              </div>
+            ) : null}
+          </div>
+        </div>
       )}
     </div>
   );
 };
+
 export default TrainChecker;
