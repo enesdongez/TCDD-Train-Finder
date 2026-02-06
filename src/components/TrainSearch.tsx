@@ -27,7 +27,7 @@ const TrainSearch = (props: Props) => {
   useEffect(() => {
     if (!trainSelectList) {
       axios
-        .get("https://train-finder-proxy.onrender.com/proxy", {
+        .get("http://localhost:7777/proxy", {
           params: {
             url: "https://cdn-api-prod-ytp.tcddtasimacilik.gov.tr/datas/station-pairs-INTERNET.json?environment=dev&userId=1",
           },
@@ -50,7 +50,7 @@ const TrainSearch = (props: Props) => {
   useEffect(() => {
     if (fromStation && trainSelectList) {
       const filtered = trainSelectList.filter(
-        (station: any) => station.id !== fromStation
+        (station: any) => station.id !== fromStation,
       );
       setFilteredToStations(filtered);
       setToStation("");
@@ -118,7 +118,7 @@ const TrainSearch = (props: Props) => {
     });
     axios
       .post(
-        "https://train-finder-proxy.onrender.com/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
+        "http://localhost:7777/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
         {
           searchRoutes: [
             {
@@ -141,7 +141,7 @@ const TrainSearch = (props: Props) => {
             "Accept-Language": "tr",
             "Content-Type": "application/json",
           },
-        }
+        },
       )
       .then((res: any) => {
         const tempList: any = [];
@@ -185,14 +185,14 @@ const TrainSearch = (props: Props) => {
   const getFilteredFromStations = () => {
     if (!trainSelectList) return [];
     return trainSelectList.filter((station: any) =>
-      turkishToLower(station.name).includes(turkishToLower(fromSearchTerm))
+      turkishToLower(station.name).includes(turkishToLower(fromSearchTerm)),
     );
   };
 
   const getFilteredToStationsSearch = () => {
     if (!filteredToStations) return [];
     return filteredToStations.filter((station: any) =>
-      turkishToLower(station.name).includes(turkishToLower(toSearchTerm))
+      turkishToLower(station.name).includes(turkishToLower(toSearchTerm)),
     );
   };
 
@@ -239,11 +239,14 @@ const TrainSearch = (props: Props) => {
             gap: "10px",
             marginBottom: "15px",
             alignItems: "center",
-            flexWrap: "wrap"
+            flexWrap: "wrap",
           }}
         >
           {/* Nereden */}
-          <div style={{ flex: "1 1 200px", position: "relative" }} ref={fromRef}>
+          <div
+            style={{ flex: "1 1 200px", position: "relative" }}
+            ref={fromRef}
+          >
             <input
               type="text"
               value={fromSearchTerm}

@@ -19,11 +19,11 @@ const TrainChecker = () => {
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
   const [optionsList, setOptionsList] = useState<any>();
   const [selectedStations, setSelectedStations] = useState<any>([]);
-  const [isClose, setIsClose] = useState<boolean>(true);
+  const [isClose, setIsClose] = useState<any>();
 
   const getData = async (body: any, name: any) => {
     const response = await fetch(
-      "https://train-finder-proxy.onrender.com/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
+      "http://localhost:7777/proxy?url=https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms/train/train-availability?environment=dev&userId=1",
       {
         method: "POST",
         headers: {
@@ -52,17 +52,6 @@ const TrainChecker = () => {
       setError(err.message || "Bilinmeyen hata oluştu");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const dataControl = (gDate: any) => {
-    const diffMs = Math.abs((new Date() as any) - (new Date(gDate) as any));
-    const diffMinutes = diffMs / 1000 / 60;
-
-    if (diffMinutes >= 5) {
-      return true;
-    } else {
-      return false;
     }
   };
 
@@ -119,31 +108,42 @@ const TrainChecker = () => {
         if (
           bodyList[index]?.train?.find((g: any) => g === String(train?.number))
         ) {
+          const user = bodyList?.find((f: any) =>
+            f?.train?.find((k: any) => String(k) === String(train?.number)),
+          );
           const cabins = train?.cabinClassAvailabilities?.filter(
             (x: any) =>
               x?.cabinClass?.code === "Y1" || x?.cabinClass?.code === "C",
           );
           if (cabins?.length) {
-            const user = bodyList?.find((f: any) =>
-              f?.train?.find((k: any) => String(k) === String(train?.number)),
-            );
             const tempData2 = bodyList?.map((d: any) =>
               d?.train?.find((k: any) => k === String(train?.number))
                 ? { ...d, isSendEmail: false }
                 : d,
             );
-            sendMail("Tren Bulundu - " + user?.name, user?.email, isClose);
+            sendMail(
+              "Tren Bulundu - " + user?.name,
+              user?.email,
+              isClose?.find((e: any) => e?.name === user?.name)?.sendMail,
+            );
             setBodyList(tempData2);
-
             const audio = new Audio("alert2.mp3");
             console.log("buldu", new Date());
             audio.play().catch(() => {
               console.log("Tarayıcı otomatik çalmaya izin vermedi");
             });
             tempData.push({ train: train, data: cabins, name: x?.name });
-            setIsClose(false);
+            setIsClose(
+              isClose?.map((e: any) =>
+                e?.name === user?.name ? { ...e, sendMail: false } : e,
+              ),
+            );
           } else {
-            setIsClose(true);
+            setIsClose(
+              isClose?.map((e: any) =>
+                e?.name === user?.name ? { ...e, sendMail: true } : e,
+              ),
+            );
           }
         }
       });
@@ -160,6 +160,11 @@ const TrainChecker = () => {
       email: emailList.split(",").map((part: any) => part.trim()),
       body: JSON.stringify(routesContent),
     };
+    if (!isClose) {
+      setIsClose([{ name: name, sendMail: true }]);
+    } else {
+      setIsClose([...isClose, { name: name, sendMail: true }]);
+    }
     if (bodyList) {
       setBodyList([...bodyList, tempData]);
     } else {
