@@ -5,6 +5,8 @@ import MultiSelect from "../input/MultiSelect";
 interface Props {
   setOptions: any;
   setRoutesContent: any;
+  setSelectedStations: any;
+  setName: any;
 }
 const TrainSearch = (props: Props) => {
   const [trainSelectList, setTrainSelectList] = useState<any>(null);
@@ -156,6 +158,8 @@ const TrainSearch = (props: Props) => {
           });
         });
         props?.setOptions(tempList);
+        props?.setSelectedStations([]);
+        props?.setName("");
       })
       .catch((error) => {
         console.error("Error fetching train list:", error);

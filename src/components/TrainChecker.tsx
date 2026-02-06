@@ -148,7 +148,6 @@ const TrainChecker = () => {
         }
       });
     });
-
     setFindData(tempData);
   }, [resultData]);
 
@@ -177,10 +176,12 @@ const TrainChecker = () => {
     if (tempData?.length > 0) {
       setBodyList(tempData);
       setIsRefresh(!isRefresh);
+      setIsClose(isClose?.filter((e: any) => e?.name !== name));
     } else {
       setBodyList(null);
       setStartSearch(false);
       setIsRefresh(!isRefresh);
+      setIsClose(null);
     }
   };
 
@@ -198,6 +199,8 @@ const TrainChecker = () => {
       <TrainSearch
         setOptions={setOptionsList}
         setRoutesContent={setRoutesContent}
+        setSelectedStations={setSelectedStations}
+        setName={setName}
       />
 
       {optionsList && (
