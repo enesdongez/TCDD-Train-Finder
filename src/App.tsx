@@ -1,5 +1,5 @@
 import "./App.css";
-import TrainChecker from "./components/TrainChecker";
+import TrainChecker from "./pages/TrainChecker";
 
 function App() {
   return (

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 import styles from "../styles";
 import TrainSearch from "./TrainSearch";
-import MultiSelect from "../input/MultiSelect";
+import MultiSelect from "../components/MultiSelect";
 
 const TrainChecker = () => {
   const [loading, setLoading] = useState(true);

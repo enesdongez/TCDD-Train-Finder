@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import styles from "../styles";
-import MultiSelect from "../input/MultiSelect";
+
 interface Props {
   setOptions: any;
   setRoutesContent: any;
