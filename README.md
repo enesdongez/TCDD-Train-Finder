@@ -1,3 +1,3 @@
 # TCDD Train Finder
 
-Started => npm start\
+Started => npm start
