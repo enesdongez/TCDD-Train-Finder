@@ -76,24 +76,18 @@ const TrainChecker = () => {
     }
   }, [startSearch, isRefresh]);
 
-  const sendMail = (data: any, email: any, isSend: boolean) => {
-    if (isSend) {
-      emailjs
-        .send(
-          "service_8hv2vlt",
-          "template_2q3wlyi",
-          {
-            to_email: email,
-            from_name: "Tren Bulucu",
-            subject: "Tren Bulundu",
-            message_html: data,
-          },
-          "lQSnSbW1ViMo7cq_W",
-        )
-        .then(() => {
-          console.log("mail gönderildi");
-        })
-        .catch((err) => console.error("Mail gönderme hatası:", err));
+  const sendMail = async (data: any, email: any, isSend: boolean) => {
+    if (!isSend) return;
+
+    try {
+      await fetch("http://localhost:7777/send-mail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, data }),
+      });
+      console.log("mail gönderildi");
+    } catch (err) {
+      console.error("Mail gönderme hatası:", err);
     }
   };
 

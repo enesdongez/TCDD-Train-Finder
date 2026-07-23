@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import nodemailer from "nodemailer";
+import "dotenv/config";
 
 const app = express();
 const PORT = 7777;
@@ -63,3 +65,38 @@ app.all("/proxy", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Sunucu http://localhost:${PORT} adresinde çalışıyor...`);
 });
+
+ 
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,    
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === "true", 
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+ 
+app.post("/send-mail", async (req, res) => {
+  const { email, data } = req.body;
+ 
+  if (!email || !data) {
+    return res.status(400).json({ error: "email veya data eksik" });
+  }
+ 
+  try {
+    const info = await transporter.sendMail({
+      from: `"Tren Bulucu" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Tren Bulundu",
+      html: data,
+    });
+ 
+    console.log("✅ Mail gönderildi:", info.messageId);
+    res.status(200).json({ message: "Mail gönderildi" });
+  } catch (error) {
+    console.error("❌ Mail gönderme hatası:", error.message);
+    res.status(500).json({ error: "Mail gönderilemedi" });
+  }
+});
+ 
