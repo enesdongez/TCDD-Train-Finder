@@ -115,7 +115,7 @@ const TrainSearch = (props: Props) => {
       ],
       passengerTypeCounts: [{ id: 0, count: 1 }],
       searchReservation: false,
-      searchType: "DOMESTIC",
+      // searchType: "DOMESTIC",
       blTrainTypes: ["TURISTIK_TREN"],
     });
     axios
@@ -133,7 +133,7 @@ const TrainSearch = (props: Props) => {
           ],
           passengerTypeCounts: [{ id: 0, count: 1 }],
           searchReservation: false,
-          searchType: "DOMESTIC",
+          // searchType: "DOMESTIC",
           blTrainTypes: ["TURISTIK_TREN"],
         },
         {
